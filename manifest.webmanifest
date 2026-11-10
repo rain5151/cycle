@@ -1,0 +1,16 @@
+{
+  "name": "周期记录",
+  "short_name": "周期",
+  "description": "本地加密的经期记录",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdf7f8",
+  "theme_color": "#b5475e",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icons/192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

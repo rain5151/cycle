@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b5475e">
+<title>周期记录</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./style.css">
+<link rel="apple-touch-icon" href="./icons/192.png">
+</head>
+<body>
+
+<!-- 首次设置 -->
+<section id="setup" class="screen hidden">
+  <h1>设置密码</h1>
+  <p class="hint">记录会用这个密码加密后存在本机。忘记密码＝数据无法恢复，请记牢或先写下来。</p>
+  <input id="setup-pw1" type="password" inputmode="text" autocomplete="new-password" placeholder="密码（至少 6 位）">
+  <input id="setup-pw2" type="password" inputmode="text" autocomplete="new-password" placeholder="再输一次">
+  <button id="setup-go" class="primary">创建</button>
+  <p id="setup-err" class="err"></p>
+</section>
+
+<!-- 解锁 -->
+<section id="lock" class="screen hidden">
+  <h1>输入密码</h1>
+  <input id="lock-pw" type="password" inputmode="text" autocomplete="current-password" placeholder="密码">
+  <button id="lock-go" class="primary">解锁</button>
+  <p id="lock-err" class="err"></p>
+</section>
+
+<!-- 主界面 -->
+<main id="app" class="hidden">
+  <header>
+    <button id="prev-month" class="icon" aria-label="上个月">‹</button>
+    <div id="month-label" class="month"></div>
+    <button id="next-month" class="icon" aria-label="下个月">›</button>
+    <button id="lock-now" class="icon" aria-label="锁定">锁</button>
+    <button id="open-settings" class="icon gear" aria-label="设置">⚙</button>
+  </header>
+
+  <div id="banner" class="banner hidden"></div>
+
+  <div class="weekdays">
+    <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+  </div>
+  <div id="grid" class="grid"></div>
+
+  <div class="legend">
+    <span><i class="lg period"></i>月经期</span>
+    <span><i class="lg predicted"></i>预测经期</span>
+    <span><i class="lg ovu"></i>排卵期</span>
+    <span><i class="lg ovuday">✿</i>排卵日</span>
+    <span><i class="lg safe"></i>安全期</span>
+  </div>
+
+  <section class="stats">
+    <div class="stat"><b id="s-avg">–</b><span>平均周期</span></div>
+    <div class="stat"><b id="s-last">–</b><span>上次开始</span></div>
+    <div class="stat"><b id="s-next">–</b><span>预计下次</span></div>
+    <div class="stat"><b id="s-len">–</b><span>预计经期</span></div>
+  </section>
+
+  <p class="disclaimer">安全期、排卵期、排卵日都是按日历推算的，不是医学判断，不能作为避孕或备孕依据。周期受压力、疾病、作息影响很大。</p>
+
+  <button id="add-record" class="fab" aria-label="记录">＋</button>
+</main>
+
+<!-- 记录表单 -->
+<div id="sheet" class="sheet hidden">
+  <div class="sheet-inner">
+    <h2 id="sheet-title">记录经期</h2>
+    <label>开始日期<input id="f-start" type="date"></label>
+    <label>结束日期<input id="f-end" type="date"></label>
+    <label>流量
+      <select id="f-flow">
+        <option value="light">少</option>
+        <option value="medium" selected>中</option>
+        <option value="heavy">多</option>
+      </select>
+    </label>
+    <fieldset>
+      <legend>症状</legend>
+      <label class="chk"><input type="checkbox" value="cramps">腹痛</label>
+      <label class="chk"><input type="checkbox" value="headache">头痛</label>
+      <label class="chk"><input type="checkbox" value="mood">情绪波动</label>
+      <label class="chk"><input type="checkbox" value="breast">乳房胀痛</label>
+      <label class="chk"><input type="checkbox" value="fatigue">疲劳</label>
+    </fieldset>
+    <label id="daynote-wrap" class="hidden">这一天的备注<input id="f-daynote" type="text" placeholder="比如：量多、请假在家"></label>
+    <label>用药<input id="f-meds" type="text" placeholder="可不填"></label>
+    <label>备注<input id="f-notes" type="text" placeholder="可不填"></label>
+    <div class="sheet-actions">
+      <button id="f-delete" class="danger hidden">删除</button>
+      <button id="f-cancel">取消</button>
+      <button id="f-save" class="primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 设置 -->
+<div id="settings" class="sheet hidden">
+  <div class="sheet-inner">
+    <h2>设置</h2>
+    <button id="exp-encrypted" class="primary">导出加密备份</button>
+    <p class="hint small">导出后会弹出分享面板，选微信或邮件即可发出去；若没有分享面板，文件会存到手机的「下载」目录。</p>
+    <button id="exp-plain">导出明文（不安全）</button>
+    <button id="imp">导入备份</button>
+    <input id="imp-file" type="file" accept="application/json,.json" class="hidden">
+    <hr>
+    <button id="change-pw">修改密码</button>
+    <button id="close-settings">关闭</button>
+  </div>
+</div>
+
+<!-- 通用对话框 -->
+<div id="modal" class="overlay hidden">
+  <div class="dialog">
+    <h3 id="modal-title"></h3>
+    <p id="modal-text" class="hint"></p>
+    <div id="modal-body"></div>
+    <div id="modal-actions" class="dialog-actions"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="./app.js"></script>
+</body>
+</html>

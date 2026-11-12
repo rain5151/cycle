@@ -280,7 +280,8 @@
     const cells = [];
     for (let i = 0; i < offset; i++) cells.push(null);
     for (let d = 1; d <= daysInMonth; d++) cells.push(ymd(new Date(y, m, d)));
-    while (cells.length % 7 !== 0) cells.push(null);
+    // 固定补到 42 格（6 周），避免不同月份行数不同导致整页高度跳动
+    while (cells.length < 42) cells.push(null);
 
     const grid = $('grid');
     grid.innerHTML = '';
@@ -315,6 +316,37 @@
     $('s-last').textContent = stats.last ? stats.last.slice(5) : '–';
     $('s-next').textContent = stats.next ? stats.next.slice(5) : '–';
     $('s-len').textContent = stats.avgLen ? `${stats.avgLen} 天` : '–';
+
+    // 最近三次：最新在前，显示持续天数与距上一次的间隔
+    const all = sortedRecords();
+    const box = $('recent-list');
+    box.textContent = '';
+    for (const r of all.slice(-3).reverse()) {
+      const idx = all.indexOf(r);
+      const prev = idx > 0 ? all[idx - 1] : null;
+      const dur = r.open ? null : diffDays(r.start, r.end) + 1;
+      const gap = prev ? diffDays(prev.start, r.start) : null;
+
+      const row = document.createElement('div');
+      row.className = 'recent-row';
+
+      const top = document.createElement('div');
+      top.className = 'recent-top';
+      const left = document.createElement('span');
+      left.textContent = r.start;
+      const right = document.createElement('span');
+      right.textContent = dur ? `${dur} 天` : '进行中';
+      top.append(left, right);
+
+      const sub = document.createElement('div');
+      sub.className = 'recent-sub';
+      const g1 = document.createElement('span');
+      g1.textContent = gap ? `间隔 ${gap} 天` : '最早一条记录';
+      sub.append(g1);
+
+      row.append(top, sub);
+      box.append(row);
+    }
 
     const on = ongoingRecord();
     const banner = $('banner');

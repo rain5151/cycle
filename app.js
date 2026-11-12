@@ -269,7 +269,17 @@
     if (!vault) return;
     const y = viewMonth.getFullYear();
     const m = viewMonth.getMonth();
-    $('month-label').textContent = `${y} 年 ${m + 1} 月`;
+    // 月份数字放进固定宽度的容器，9 月和 10 月占同样宽度，年月整体不位移
+    const label = $('month-label');
+    label.textContent = '';
+    const yEl = document.createElement('span');
+    yEl.textContent = `${y} 年 `;
+    const mEl = document.createElement('span');
+    mEl.className = 'mnum';
+    mEl.textContent = String(m + 1);
+    const sufEl = document.createElement('span');
+    sufEl.textContent = ' 月';
+    label.append(yEl, mEl, sufEl);
 
     const first = new Date(y, m, 1);
     const offset = (first.getDay() + 6) % 7;

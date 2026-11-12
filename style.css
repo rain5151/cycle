@@ -71,6 +71,8 @@ button {
   border: 1px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
+  /* 关掉双击放大：手机浏览器对按钮的默认行为 */
+  touch-action: manipulation;
 }
 
 button.primary {
@@ -101,6 +103,14 @@ header {
   min-width: 8.5em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+}
+
+/* 月份数字固定占两字符宽：9 月与 10 月宽度一致，整串不位移 */
+.month .mnum {
+  display: inline-block;
+  min-width: 1.3em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 button.icon {

@@ -119,16 +119,6 @@ button.icon svg { display: block; }
 
 button.gear { margin-left: 4px; }
 
-.weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 12px;
-  padding-bottom: 6px;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -150,6 +140,15 @@ button.gear { margin-left: 4px; }
 }
 
 .day.other { color: var(--muted); opacity: .45; }
+
+/* 星期标签：同一网格的第一行，高度收窄，保证与日期列严格对齐 */
+.day.label {
+  aspect-ratio: auto;
+  height: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
 .day.today { border-color: var(--accent); font-weight: 700; }
 .day.period { background: #f74c86; color: #fff; font-weight: 700; }
 .day.predicted { background: #ffcbdd; color: #a03050; }

@@ -1,5 +1,5 @@
-﻿// 绂荤嚎缂撳瓨锛氬簲鐢ㄥ澹崇紦瀛樹紭鍏堬紝鍏朵綑璧扮綉缁滃悗鍥炲～
-const CACHE = 'cycle-v15';
+// 绂荤嚎缂撳瓨锛氬簲鐢ㄥ澹崇紦瀛樹紭鍏堬紝鍏朵綑璧扮綉缁滃悗鍥炲～
+const CACHE = 'cycle-v16';
 const ASSETS = [
   './',
   './index.html',

@@ -285,6 +285,13 @@
 
     const grid = $('grid');
     grid.innerHTML = '';
+    // 星期标签与日期共用同一个网格，从结构上保证列对齐
+    for (const label of ['一', '二', '三', '四', '五', '六', '日']) {
+      const el = document.createElement('div');
+      el.className = 'day label';
+      el.textContent = label;
+      grid.appendChild(el);
+    }
     for (const day of cells) {
       const el = document.createElement('button');
       el.className = 'day';

@@ -69,8 +69,6 @@
     <div class="stat"><b id="s-len">–</b><span>预计经期</span></div>
   </section>
 
-  <p class="disclaimer">安全期、排卵期、排卵日都是按日历推算的，不是医学判断，不能作为避孕或备孕依据。周期受压力、疾病、作息影响很大。</p>
-
   <section class="recent">
     <h3>最近三次</h3>
     <div id="recent-list"></div>
@@ -120,7 +118,9 @@
     <button id="exp-plain">导出明文（不安全）</button>
     <button id="imp">导入备份</button>
     <input id="imp-file" type="file" accept="application/json,.json" class="hidden">
+    <button id="dedupe">清理重复记录</button>
     <hr>
+    <p class="hint small">安全期、排卵期、排卵日都是按日历推算的，不是医学判断，不能作为避孕或备孕依据。</p>
     <button id="change-pw">修改密码</button>
     <button id="close-settings">关闭</button>
   </div>

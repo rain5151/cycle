@@ -335,13 +335,13 @@
       const left = document.createElement('span');
       left.textContent = r.start;
       const right = document.createElement('span');
-      right.textContent = dur ? `${dur} 天` : '进行中';
+      right.textContent = gap ? `间隔 ${gap} 天` : '最早一条';
       top.append(left, right);
 
       const sub = document.createElement('div');
       sub.className = 'recent-sub';
       const g1 = document.createElement('span');
-      g1.textContent = gap ? `间隔 ${gap} 天` : '最早一条记录';
+      g1.textContent = dur ? `持续 ${dur} 天` : '进行中';
       sub.append(g1);
 
       row.append(top, sub);
@@ -639,8 +639,46 @@
     show($('lock'));
   }
 
-  async function changePassword() {
+  async function dedupeRecords() {
+    const seen = new Map();
+    const keep = [];
+    let removed = 0;
+    const sorted = [...vault.records].sort((a, b) => (a.start < b.start ? -1 : 1));
+    for (const r of sorted) {
+      if (seen.has(r.start)) {
+        const prev = seen.get(r.start);
+        const score = (x) => (x.end ? 1 : 0) + (x.notes ? 1 : 0) + (x.meds ? 1 : 0);
+        if (score(r) > score(prev)) {
+          const idx = keep.indexOf(prev);
+          if (idx > -1) keep[idx] = r;
+          seen.set(r.start, r);
+        }
+        removed += 1;
+        continue;
+      }
+      seen.set(r.start, r);
+      keep.push(r);
+    }
+    if (removed === 0) {
+      toast('没有发现重复记录');
+      return;
+    }
     const ans = await dialog({
+      title: `发现 ${removed} 条重复`,
+      text: '同一个开始日期只保留一条（保留信息更全的那条）。此操作不可撤销。',
+      buttons: [
+        { label: '取消', value: null },
+        { label: '清理', value: 'ok', kind: 'danger' },
+      ],
+    });
+    if (!ans) return;
+    vault.records = keep;
+    await saveAll();
+    render();
+    toast(`已清理 ${removed} 条`);
+  }
+
+  async function changePassword() {    const ans = await dialog({
       title: '修改密码',
       text: '修改后，之前导出的加密备份仍要用旧密码打开。',
       fields: [
@@ -704,6 +742,10 @@
       openSheet(today, null, { endPrefill: today });
       return;
     }
+    if (vault.records.some((r) => r.start === today)) {
+      toast('今天已经有一条记录，点日历上的今天可以修改它', 'err');
+      return;
+    }
     vault.records.push({
       id: crypto.randomUUID(), start: today, end: '', open: true, flow: 'medium', symptoms: [], meds: '', notes: '',
     });
@@ -740,6 +782,10 @@
     }
     if (ongoingRecord()) {
       toast('已有一段未结束的记录，先结束它', 'err');
+      return;
+    }
+    if (vault.records.some((r) => r.start === day)) {
+      toast('这天已有记录，点它修改即可', 'err');
       return;
     }
     vault.records.push({
@@ -779,6 +825,7 @@
     $('exp-plain').addEventListener('click', exportPlain);
     $('change-pw').addEventListener('click', changePassword);
     $('imp').addEventListener('click', () => $('imp-file').click());
+    $('dedupe').addEventListener('click', dedupeRecords);
     $('imp-file').addEventListener('change', async (e) => {
       const f = e.target.files?.[0];
       if (f) await importFile(f);
